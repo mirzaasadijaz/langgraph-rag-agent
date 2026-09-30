@@ -1,0 +1,26 @@
+# UI & Environment
+streamlit
+python-dotenv
+
+# LangChain Core & Graph
+langchain
+langchain-core
+langchain-community
+langgraph
+langgraph-checkpoint-sqlite
+
+# LLM Providers
+langchain-google-genai
+langchain-groq
+
+# RAG, Embeddings & PDF
+langchain-huggingface
+sentence-transformers
+pymupdf
+faiss-cpu
+torch
+torchvision
+
+# Tools
+duckduckgo-search
+tavily-python

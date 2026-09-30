@@ -1,0 +1,97 @@
+```markdown
+# Advanced RAG Chatbot
+
+![Python](https://img.shields.io/badge/Python-3.8%2B-blue)
+![LangGraph](https://img.shields.io/badge/LangGraph-Stateful%20Agents-orange)
+![Streamlit](https://img.shields.io/badge/Streamlit-Frontend-FF4B4B)
+![FAISS](https://img.shields.io/badge/FAISS-Vector%20Search-green)
+
+A robust, stateful AI assistant built with **LangGraph** and **Streamlit** that integrates dynamic Retrieval-Augmented Generation (RAG) with autonomous tool calling. Instead of relying on a single naive generate call, this architecture evaluates queries and dynamically routes them to specialized tools—including local PDF semantic search, live internet browsing, and mathematical evaluation. 
+
+Conversational state is securely maintained across multiple independent sessions using a persistent SQLite checkpointer.
+
+## Key Features
+
+*   **Autonomous Tool Calling:** Powered by Groq (`openai/gpt-oss-20b`), the agent intelligently decides when to search the web, calculate math, or read uploaded documents based on strict systemic guardrails.
+*   **Persistent Conversational Memory:** All chat threads are saved to a local SQLite database (`chatbot.db`), allowing users to switch between multiple past conversations seamlessly via the frontend sidebar.
+*   **Dynamic Document Ingestion:** Users can upload PDF files directly through the Streamlit interface. Documents are instantly chunked and embedded using HuggingFace (`all-MiniLM-L6-v2`) into a FAISS vector store for high-speed semantic retrieval.
+*   **Live Web Fallback:** Equipped with both DuckDuckGo and AI-optimized Tavily search tools to fetch accurate, real-time data for current events.
+*   **Mathematical Execution:** Bypasses LLM arithmetic hallucinations by routing mathematical expressions through an isolated Python `eval` sandbox.
+
+## System Architecture
+
+| Component | Technology / Library | Description |
+| :--- | :--- | :--- |
+| **Frontend UI** | Streamlit | Handles interactive chat interfaces, session state management, and file uploads. |
+| **Orchestration** | LangGraph & LangChain | Manages the conditional agent graph (edges/nodes) and LLM tool binding. |
+| **Memory** | SQLite (`SqliteSaver`) | Checkpoints LangGraph state to `chatbot.db` for thread persistence. |
+| **Embeddings & Search** | FAISS, PyMuPDF, HuggingFace | Extracts PDF text, splits it into overlapping chunks, and performs similarity searches. |
+| **Primary LLMs** | Groq & Google GenAI | High-speed inference and tool selection using `openai/gpt-oss-20b` and `gemini-3.5-flash-lite`. |
+
+## Prerequisites
+
+*   Python 3.8 or higher
+*   Valid API keys for Groq, Google Gemini, and Tavily (optional but recommended for enhanced search).
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/mirzaasadijaz/advanced-rag-chatbot.git](https://github.com/mirzaasadijaz/advanced-rag-chatbot.git)
+   cd advanced-rag-chatbot
+
+```
+
+2. **Set up a virtual environment:**
+```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+```
+
+
+3. **Install dependencies:**
+The project requires LangChain ecosystem packages, PyTorch, FAISS, and Streamlit.
+```bash
+pip install -r requirements.txt
+
+```
+
+
+4. **Configure Environment Variables:**
+Create a `.env` file in the root directory and add your API keys:
+```env
+GROQ_API_KEY=your_groq_api_key_here
+GOOGLE_API_KEY=your_google_api_key_here
+TAVILY_API_KEY=your_tavily_api_key_here
+
+```
+
+
+
+## Usage
+
+Launch the interactive web application by running the Streamlit server:
+
+```bash
+streamlit run streamlit_frontent.py
+
+```
+
+* **Chatting:** Use the main input box to ask questions, solve math problems, or request current news.
+* **Document Analysis:** Expand the sidebar, upload a `.pdf` file, and wait for the "Indexed!" confirmation. You can then ask specific questions about the document's contents.
+* **Thread Management:** Click **➕ New Chat** in the sidebar to start a fresh conversation, or click on previous chat summaries to resume older threads.
+
+## Repository Structure
+
+* `streamlit_frontent.py`: The user interface, handling UI rendering, sidebar controls, and streaming responses.
+* `chatbot_backend.py`: Core logic defining the LangGraph `StateGraph`, nodes, conditional edges, and SQLite checkpointer configuration.
+* `tools.py`: Contains the `@tool` definitions for the calculator, DuckDuckGo search, Tavily search, and the FAISS-powered `query_uploaded_pdf` retriever.
+* `prompt.py`: Defines the `SystemMessage` that enforces behavioral instructions, formatting constraints, and strict tool-usage rules.
+* `requirements.txt`: Standardized dependency manifest.
+
+---
+
+**Author:** Asad Ijaz
+
+**Source Code:** [mirzaasadijaz/advanced-rag-chatbot](https://github.com/mirzaasadijaz/advanced-rag-chatbot)
